@@ -3,10 +3,10 @@ import os
 
 class Student(Person):
 
-    FILE_NAME = "data/students.txt"
+    FILE_NAME = "student.txt"
 
-    def _init_(self, person_id, name, age, department):
-        super()._init_(person_id, name)
+    def __init__(self, person_id, name, age, department):
+        super().__init__(person_id, name)
         self.age = age
         self.department = department
 
@@ -21,7 +21,7 @@ class Student(Person):
             print("Error:", e)
 
     # View Students
-    def view_students():
+    def view_students(self):
         try:
             if not os.path.exists(Student.FILE_NAME):
                 print("No student record found.")
@@ -52,7 +52,7 @@ class Student(Person):
             print("Error:", e)
 
     # Search Student
-    def search_student():
+    def search_student(self):
 
         try:
             search_id = input("Enter Student ID: ")
@@ -88,7 +88,7 @@ class Student(Person):
             print("Error:", e)
 
     # Delete Student
-    def delete_student():
+    def delete_student(self):
 
         try:
             delete_id = input("Enter Student ID to delete: ")

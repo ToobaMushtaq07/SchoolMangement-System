@@ -1,6 +1,6 @@
 class Person:
 
-    def _init_(self, person_id, name):
+    def __init__(self, person_id, name):
         self.person_id = person_id
         self.name = name
 

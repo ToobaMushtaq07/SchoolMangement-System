@@ -1,9 +1,9 @@
 import os
 class Classroom:
 
-    FILE_NAME = "data/classrooms.txt"
+    FILE_NAME = "data/classroom.txt"
 
-    def _init_(self, room_number, class_name, capacity):
+    def __init__(self, room_number, class_name, capacity):
         self.room_number = room_number
         self.class_name = class_name
         self.capacity = capacity

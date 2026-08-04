@@ -4,10 +4,10 @@ import os
 
 class Teacher(Person):
 
-    FILE_NAME = "data/teachers.txt"
+    FILE_NAME = "data/teacher.txt"
 
-    def _init_(self, person_id, name, subject, qualification):
-        super()._init_(person_id, name)
+    def __init__(self, person_id, name, subject, qualification):
+        super().__init__(person_id, name)
         self.subject = subject
         self.qualification = qualification
 
@@ -22,7 +22,6 @@ class Teacher(Person):
             print("Error:", e)
 
     # View Teachers
-    @staticmethod
     def view_teachers():
         try:
             if not os.path.exists(Teacher.FILE_NAME):
@@ -54,7 +53,6 @@ class Teacher(Person):
             print("Error:", e)
 
     # Search Teacher
-    @staticmethod
     def search_teacher():
 
         try:
@@ -91,7 +89,6 @@ class Teacher(Person):
             print("Error:", e)
 
     # Delete Teacher
-    @staticmethod
     def delete_teacher():
 
         try:

@@ -3,7 +3,7 @@ class Timetable:
 
     FILE_NAME = "data/timetable.txt"
 
-    def _init_(self, day, subject, teacher_name, time):
+    def __init__(self, day, subject, teacher_name, time):
         self.day = day
         self.subject = subject
         self.teacher_name = teacher_name
