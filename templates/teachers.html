@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="page-heading">
+        <h2>Teacher Management</h2>
+        <p>Add, update, view and delete teacher records.</p>
+    </div>
+
+    <div class="card form-card shadow-sm mb-4">
+        <div class="card-header">
+            {% if edit_teacher %}Edit Teacher{% else %}Add New Teacher{% endif %}
+        </div>
+
+        <div class="card-body">
+            <form method="POST" action="{% if edit_teacher %}/teachers/update/{{ edit_teacher.person_id }}{% else %}/teachers/add{% endif %}">
+                <div class="row">
+
+                    <div class="col-md-3 mb-3">
+                        <label>Teacher ID</label>
+                        <input type="number" name="person_id" class="form-control"
+                               value="{{ edit_teacher.person_id if edit_teacher else '' }}"
+                               {% if edit_teacher %}readonly{% endif %}
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Name</label>
+                        <input type="text" name="name" class="form-control"
+                               value="{{ edit_teacher.name if edit_teacher else '' }}"
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Subject</label>
+                        <input type="text" name="subject" class="form-control"
+                               value="{{ edit_teacher.subject if edit_teacher else '' }}"
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Qualification</label>
+                        <input type="text" name="qualification" class="form-control"
+                               value="{{ edit_teacher.qualification if edit_teacher else '' }}"
+                               required>
+                    </div>
+
+                </div>
+
+                <button class="btn btn-success">
+                    {% if edit_teacher %}Update Teacher{% else %}Add Teacher{% endif %}
+                </button>
+
+                {% if edit_teacher %}
+                    <a href="/teachers" class="btn btn-secondary">Cancel</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">Teacher Records</div>
+
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Subject</th>
+                        <th>Qualification</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.person_id }}</td>
+                        <td>{{ teacher.name }}</td>
+                        <td>{{ teacher.subject }}</td>
+                        <td>{{ teacher.qualification }}</td>
+                        <td>
+                            <a href="/teachers/edit/{{ teacher.person_id }}" class="btn btn-sm btn-warning">Edit</a>
+
+                            <form action="/teachers/delete/{{ teacher.person_id }}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('Delete this teacher?')">
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No teacher records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

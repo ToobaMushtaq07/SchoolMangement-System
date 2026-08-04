@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>School Management System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="{% if 'user' not in session %}login-page{% endif %}">
+
+{% if "user" in session %}
+<div class="sidebar">
+    <div class="brand">
+        <i class="bi bi-mortarboard-fill"></i>
+        <span>School Admin</span>
+    </div>
+
+    <a href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/students"><i class="bi bi-people-fill"></i> Students</a>
+    <a href="/teachers"><i class="bi bi-person-badge-fill"></i> Teachers</a>
+    <a href="/classrooms"><i class="bi bi-building-fill"></i> Classrooms</a>
+    <a href="/timetable"><i class="bi bi-calendar-week-fill"></i> Timetable</a>
+    <a href="/records"><i class="bi bi-folder-fill"></i> View All Records</a>
+    <a href="/logout" class="logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+</div>
+
+<div class="main-content">
+{% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+{% if "user" in session %}
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

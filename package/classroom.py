@@ -1,7 +1,8 @@
 import os
-class Classroom:
+from package.db import get_connection
 
-    FILE_NAME = "data/classroom.txt"
+
+class Classroom:
 
     def __init__(self, room_number, class_name, capacity):
         self.room_number = room_number
@@ -10,117 +11,116 @@ class Classroom:
 
     # Add Classroom
     def add_classroom(self):
-        try:
-            with open(Classroom.FILE_NAME, "a") as file:
-                file.write(f"{self.room_number},{self.class_name},{self.capacity}\n")
+        conn = get_connection()
+        if conn is None:
+            return
 
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                "INSERT INTO classroom (room_number, class_name, capacity) VALUES (%s, %s, %s)",
+                (self.room_number, self.class_name, self.capacity)
+            )
+            conn.commit()
             print("Classroom added successfully!")
 
         except Exception as e:
             print("Error:", e)
 
+        finally:
+            cursor.close()
+            conn.close()
+
     # View Classrooms
     def view_classrooms(self):
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
 
         try:
+            cursor.execute("SELECT * FROM classroom")
+            records = cursor.fetchall()
 
-            if not os.path.exists(Classroom.FILE_NAME):
-                print("No classroom record found.")
-                return
-
-            with open(Classroom.FILE_NAME, "r") as file:
-                records = file.readlines()
-
-            if len(records) == 0:
+            if not records:
                 print("No classroom record found.")
                 return
 
             print("\n========== Classroom Records ==========")
 
-            for line in records:
-
-                room_number, class_name, capacity = line.strip().split(",")
-
-                print(f"Room Number : {room_number}")
-                print(f"Class Name  : {class_name}")
-                print(f"Capacity    : {capacity}")
+            for row in records:
+                print(f"Room Number : {row[0]}")
+                print(f"Class Name  : {row[1]}")
+                print(f"Capacity    : {row[2]}")
                 print("-------------------------------------")
 
-        except FileNotFoundError:
-            print("Classroom file not found.")
-
         except Exception as e:
             print("Error:", e)
+
+        finally:
+            cursor.close()
+            conn.close()
 
     # Search Classroom
-
     def search_classroom(self):
+        search_room = input("Enter Room Number: ")
+
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
 
         try:
+            cursor.execute(
+                "SELECT * FROM classroom WHERE room_number = %s",
+                (search_room,)
+            )
+            row = cursor.fetchone()
 
-            search_room = input("Enter Room Number: ")
-
-            if not os.path.exists(Classroom.FILE_NAME):
-                print("Classroom file not found.")
-                return
-
-            found = False
-
-            with open(Classroom.FILE_NAME, "r") as file:
-
-                for line in file:
-
-                    room_number, class_name, capacity = line.strip().split(",")
-
-                    if room_number == search_room:
-
-                        print("\nClassroom Found")
-                        print("---------------------------")
-                        print("Room Number :", room_number)
-                        print("Class Name  :", class_name)
-                        print("Capacity    :", capacity)
-
-                        found = True
-                        break
-
-            if not found:
-                print("Classroom not found.")
-
-        except Exception as e:
-            print("Error:", e)
-
-    # Delete Classroom
-    def delete_classroom(self):
-
-        try:
-
-            delete_room = input("Enter Room Number to delete: ")
-
-            if not os.path.exists(Classroom.FILE_NAME):
-                print("Classroom file not found.")
-                return
-
-            with open(Classroom.FILE_NAME, "r") as file:
-                records = file.readlines()
-
-            found = False
-
-            with open(Classroom.FILE_NAME, "w") as file:
-
-                for line in records:
-
-                    room_number = line.strip().split(",")[0]
-
-                    if room_number != delete_room:
-                        file.write(line)
-                    else:
-                        found = True
-
-            if found:
-                print("Classroom deleted successfully!")
-
+            if row:
+                print("\nClassroom Found")
+                print("---------------------------")
+                print("Room Number :", row[0])
+                print("Class Name  :", row[1])
+                print("Capacity    :", row[2])
             else:
                 print("Classroom not found.")
 
         except Exception as e:
             print("Error:", e)
+
+        finally:
+            cursor.close()
+            conn.close()
+
+    # Delete Classroom
+    def delete_classroom(self):
+        delete_room = input("Enter Room Number to delete: ")
+
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                "DELETE FROM classroom WHERE room_number = %s",
+                (delete_room,)
+            )
+            conn.commit()
+
+            if cursor.rowcount > 0:
+                print("Classroom deleted successfully!")
+            else:
+                print("Classroom not found.")
+
+        except Exception as e:
+            print("Error:", e)
+
+        finally:
+            cursor.close()
+            conn.close()

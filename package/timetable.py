@@ -1,9 +1,7 @@
-import os
+from package.db import get_connection
 
 
 class Timetable:
-
-    FILE_NAME = "data/timetable.txt"
 
     def __init__(self, day, subject, teacher_name, time):
         self.day = day
@@ -13,135 +11,122 @@ class Timetable:
 
     # Add Timetable
     def add_timetable(self):
-        try:
-            with open(Timetable.FILE_NAME, "a") as file:
-                file.write(f"{self.day},{self.subject},{self.teacher_name},{self.time}\n")
+        conn = get_connection()
+        if conn is None:
+            return
 
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                "INSERT INTO timetable (day, subject, teacher_name, time) VALUES (%s, %s, %s, %s)",
+                (self.day, self.subject, self.teacher_name, self.time)
+            )
+            conn.commit()
             print("Timetable added successfully!")
 
         except Exception as e:
             print("Error:", e)
 
+        finally:
+            cursor.close()
+            conn.close()
+
     # View Timetable
     def view_timetable(self):
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
 
         try:
+            cursor.execute("SELECT * FROM timetable")
+            records = cursor.fetchall()
 
-            if not os.path.exists(Timetable.FILE_NAME):
-                print("No timetable record found.")
-                return
-
-            with open(Timetable.FILE_NAME, "r") as file:
-                records = file.readlines()
-
-            valid_records = []
-
-            for line in records:
-                stripped = line.strip()
-                if not stripped:
-                    continue  # Skip empty lines
-                parts = stripped.split(",")
-                if len(parts) == 4:
-                    valid_records.append(parts)
-
-            if len(valid_records) == 0:
+            if not records:
                 print("No timetable record found.")
                 return
 
             print("\n========== Timetable Records ==========")
 
-            for day, subject, teacher_name, time in valid_records:
-                print(f"Day     : {day}")
-                print(f"Subject : {subject}")
-                print(f"Teacher : {teacher_name}")
-                print(f"Time    : {time}")
+            for row in records:
+                print(f"Day     : {row[1]}")
+                print(f"Subject : {row[2]}")
+                print(f"Teacher : {row[3]}")
+                print(f"Time    : {row[4]}")
                 print("-----------------------------------")
-
-        except FileNotFoundError:
-            print("Timetable file not found.")
 
         except Exception as e:
             print("Error:", e)
+
+        finally:
+            cursor.close()
+            conn.close()
 
     # Search Timetable
     def search_timetable(self):
+        search_day = input("Enter Day: ")
+
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
 
         try:
+            cursor.execute(
+                "SELECT * FROM timetable WHERE LOWER(day) = LOWER(%s)",
+                (search_day,)
+            )
+            rows = cursor.fetchall()
 
-            search_day = input("Enter Day: ").strip()
-
-            if not os.path.exists(Timetable.FILE_NAME):
-                print("Timetable file not found.")
+            if not rows:
+                print("Timetable not found.")
                 return
 
-            found = False
+            print("\nTimetable Found")
+            print("----------------------------")
 
-            with open(Timetable.FILE_NAME, "r") as file:
-
-                for line in file:
-                    stripped = line.strip()
-                    if not stripped:
-                        continue  # Skip empty lines
-                    parts = stripped.split(",")
-                    if len(parts) != 4:
-                        continue  # Skip corrupted lines
-                    day, subject, teacher_name, time = parts
-
-                    if day.lower() == search_day.lower():
-
-                        print("\nTimetable Found")
-                        print("----------------------------")
-                        print("Day     :", day)
-                        print("Subject :", subject)
-                        print("Teacher :", teacher_name)
-                        print("Time    :", time)
-
-                        found = True
-                        break
-
-            if not found:
-                print("Timetable not found.")
+            for row in rows:
+                print("Day     :", row[1])
+                print("Subject :", row[2])
+                print("Teacher :", row[3])
+                print("Time    :", row[4])
+                print("----------------------------")
 
         except Exception as e:
             print("Error:", e)
 
+        finally:
+            cursor.close()
+            conn.close()
+
     # Delete Timetable
     def delete_timetable(self):
+        delete_day = input("Enter Day to delete: ")
+
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
 
         try:
+            cursor.execute(
+                "DELETE FROM timetable WHERE LOWER(day) = LOWER(%s)",
+                (delete_day,)
+            )
+            conn.commit()
 
-            delete_day = input("Enter Day to delete: ").strip()
-
-            if not os.path.exists(Timetable.FILE_NAME):
-                print("Timetable file not found.")
-                return
-
-            with open(Timetable.FILE_NAME, "r") as file:
-                records = file.readlines()
-
-            found = False
-
-            with open(Timetable.FILE_NAME, "w") as file:
-
-                for line in records:
-                    stripped = line.strip()
-                    if not stripped:
-                        continue  # Skip empty lines instead of writing them back
-                    parts = stripped.split(",")
-                    if len(parts) < 1:
-                        continue
-                    day = parts[0]
-
-                    if day.lower() != delete_day.lower():
-                        file.write(line)
-                    else:
-                        found = True
-
-            if found:
+            if cursor.rowcount > 0:
                 print("Timetable deleted successfully!")
-
             else:
                 print("Timetable not found.")
 
         except Exception as e:
             print("Error:", e)
+
+        finally:
+            cursor.close()
+            conn.close()

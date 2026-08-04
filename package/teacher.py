@@ -1,10 +1,8 @@
 from package.person import Person
-import os
+from package.db import get_connection
 
 
 class Teacher(Person):
-
-    FILE_NAME = "data/teacher.txt"
 
     def __init__(self, person_id, name, subject, qualification):
         super().__init__(person_id, name)
@@ -13,112 +11,118 @@ class Teacher(Person):
 
     # Add Teacher
     def add_teacher(self):
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
+
         try:
-            with open(Teacher.FILE_NAME, "a") as file:
-                file.write(f"{self.person_id},{self.name},{self.subject},{self.qualification}\n")
+            cursor.execute(
+                "INSERT INTO teacher (person_id, name, subject, qualification) VALUES (%s, %s, %s, %s)",
+                (self.person_id, self.name, self.subject, self.qualification)
+            )
+            conn.commit()
             print("Teacher added successfully!")
 
         except Exception as e:
             print("Error:", e)
 
+        finally:
+            cursor.close()
+            conn.close()
+
     # View Teachers
     def view_teachers(self):
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
+
         try:
-            if not os.path.exists(Teacher.FILE_NAME):
-                print("No teacher record found.")
-                return
+            cursor.execute("SELECT * FROM teacher")
+            records = cursor.fetchall()
 
-            with open(Teacher.FILE_NAME, "r") as file:
-                records = file.readlines()
-
-            if len(records) == 0:
+            if not records:
                 print("No teacher record found.")
                 return
 
             print("\n========== Teacher Records ==========")
 
-            for line in records:
-                person_id, name, subject, qualification = line.strip().split(",")
-
-                print(f"Teacher ID    : {person_id}")
-                print(f"Name          : {name}")
-                print(f"Subject       : {subject}")
-                print(f"Qualification : {qualification}")
+            for row in records:
+                print(f"Teacher ID    : {row[0]}")
+                print(f"Name          : {row[1]}")
+                print(f"Subject       : {row[2]}")
+                print(f"Qualification : {row[3]}")
                 print("--------------------------------------")
-
-        except FileNotFoundError:
-            print("Teacher file not found.")
 
         except Exception as e:
             print("Error:", e)
+
+        finally:
+            cursor.close()
+            conn.close()
 
     # Search Teacher
     def search_teacher(self):
+        search_id = input("Enter Teacher ID: ")
+
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
 
         try:
-            search_id = input("Enter Teacher ID: ")
+            cursor.execute(
+                "SELECT * FROM teacher WHERE person_id = %s",
+                (search_id,)
+            )
+            row = cursor.fetchone()
 
-            if not os.path.exists(Teacher.FILE_NAME):
-                print("Teacher file not found.")
-                return
-
-            found = False
-
-            with open(Teacher.FILE_NAME, "r") as file:
-
-                for line in file:
-
-                    person_id, name, subject, qualification = line.strip().split(",")
-
-                    if person_id == search_id:
-
-                        print("\nTeacher Found")
-                        print("-------------------------")
-                        print("Teacher ID    :", person_id)
-                        print("Name          :", name)
-                        print("Subject       :", subject)
-                        print("Qualification :", qualification)
-
-                        found = True
-                        break
-
-            if not found:
-                print("Teacher not found.")
-
-        except Exception as e:
-            print("Error:", e)
-
-    # Delete Teacher
-    def delete_teacher(self):
-
-        try:
-            delete_id = input("Enter Teacher ID to delete: ")
-
-            if not os.path.exists(Teacher.FILE_NAME):
-                print("Teacher file not found.")
-                return
-
-            with open(Teacher.FILE_NAME, "r") as file:
-                records = file.readlines()
-
-            found = False
-
-            with open(Teacher.FILE_NAME, "w") as file:
-
-                for line in records:
-
-                    person_id = line.strip().split(",")[0]
-
-                    if person_id != delete_id:
-                        file.write(line)
-                    else:
-                        found = True
-
-            if found:
-                print("Teacher deleted successfully!")
-
+            if row:
+                print("\nTeacher Found")
+                print("-------------------------")
+                print("Teacher ID    :", row[0])
+                print("Name          :", row[1])
+                print("Subject       :", row[2])
+                print("Qualification :", row[3])
             else:
                 print("Teacher not found.")
 
         except Exception as e:
             print("Error:", e)
+
+        finally:
+            cursor.close()
+            conn.close()
+
+    # Delete Teacher
+    def delete_teacher(self):
+        delete_id = input("Enter Teacher ID to delete: ")
+
+        conn = get_connection()
+        if conn is None:
+            return
+
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                "DELETE FROM teacher WHERE person_id = %s",
+                (delete_id,)
+            )
+            conn.commit()
+
+            if cursor.rowcount > 0:
+                print("Teacher deleted successfully!")
+            else:
+                print("Teacher not found.")
+
+        except Exception as e:
+            print("Error:", e)
+
+        finally:
+            cursor.close()
+            conn.close()

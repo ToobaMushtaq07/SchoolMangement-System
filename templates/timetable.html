@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="page-heading">
+        <h2>Timetable Management</h2>
+        <p>Add, update, view and delete timetable records.</p>
+    </div>
+
+    <div class="card form-card shadow-sm mb-4">
+        <div class="card-header">
+            {% if edit_timetable %}Edit Timetable{% else %}Add New Timetable{% endif %}
+        </div>
+
+        <div class="card-body">
+            <form method="POST" action="{% if edit_timetable %}/timetable/update/{{ edit_timetable.id }}{% else %}/timetable/add{% endif %}">
+                <div class="row">
+
+                    <div class="col-md-3 mb-3">
+                        <label>Day</label>
+                        <input type="text" name="day" class="form-control"
+                               value="{{ edit_timetable.day if edit_timetable else '' }}"
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Subject</label>
+                        <input type="text" name="subject" class="form-control"
+                               value="{{ edit_timetable.subject if edit_timetable else '' }}"
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Teacher Name</label>
+                        <input type="text" name="teacher_name" class="form-control"
+                               value="{{ edit_timetable.teacher_name if edit_timetable else '' }}"
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Time</label>
+                        <input type="text" name="time" class="form-control"
+                               value="{{ edit_timetable.time if edit_timetable else '' }}"
+                               required>
+                    </div>
+
+                </div>
+
+                <button class="btn btn-info">
+                    {% if edit_timetable %}Update Timetable{% else %}Add Timetable{% endif %}
+                </button>
+
+                {% if edit_timetable %}
+                    <a href="/timetable" class="btn btn-secondary">Cancel</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">Timetable Records</div>
+
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Day</th>
+                        <th>Subject</th>
+                        <th>Teacher</th>
+                        <th>Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in timetable %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.day }}</td>
+                        <td>{{ item.subject }}</td>
+                        <td>{{ item.teacher_name }}</td>
+                        <td>{{ item.time }}</td>
+                        <td>
+                            <a href="/timetable/edit/{{ item.id }}" class="btn btn-sm btn-warning">Edit</a>
+
+                            <form action="/timetable/delete/{{ item.id }}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('Delete this timetable record?')">
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No timetable records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

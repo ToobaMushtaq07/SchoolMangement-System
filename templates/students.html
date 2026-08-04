@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="page-heading">
+        <h2>Student Management</h2>
+        <p>Add, update, view and delete student records.</p>
+    </div>
+
+    <div class="card form-card shadow-sm mb-4">
+        <div class="card-header">
+            {% if edit_student %}Edit Student{% else %}Add New Student{% endif %}
+        </div>
+
+        <div class="card-body">
+            <form method="POST" action="{% if edit_student %}/students/update/{{ edit_student.person_id }}{% else %}/students/add{% endif %}">
+                <div class="row">
+
+                    <div class="col-md-3 mb-3">
+                        <label>Student ID</label>
+                        <input type="number" name="person_id" class="form-control"
+                               value="{{ edit_student.person_id if edit_student else '' }}"
+                               {% if edit_student %}readonly{% endif %}
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Name</label>
+                        <input type="text" name="name" class="form-control"
+                               value="{{ edit_student.name if edit_student else '' }}"
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Age</label>
+                        <input type="number" name="age" class="form-control"
+                               value="{{ edit_student.age if edit_student else '' }}"
+                               required>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Department</label>
+                        <input type="text" name="department" class="form-control"
+                               value="{{ edit_student.department if edit_student else '' }}"
+                               required>
+                    </div>
+
+                </div>
+
+                <button class="btn btn-primary">
+                    {% if edit_student %}Update Student{% else %}Add Student{% endif %}
+                </button>
+
+                {% if edit_student %}
+                    <a href="/students" class="btn btn-secondary">Cancel</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">Student Records</div>
+
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Department</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.person_id }}</td>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.age }}</td>
+                        <td>{{ student.department }}</td>
+                        <td>
+                            <a href="/students/edit/{{ student.person_id }}" class="btn btn-sm btn-warning">Edit</a>
+
+                            <form action="/students/delete/{{ student.person_id }}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('Delete this student?')">
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No student records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

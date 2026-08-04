@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="page-heading">
+        <h2>All School Records</h2>
+        <p>Combined view of students, teachers, classrooms and timetable.</p>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">Students</div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Department</th>
+                </tr>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.person_id }}</td>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.age }}</td>
+                    <td>{{ s.department }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center">No student records.</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">Teachers</div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Subject</th>
+                    <th>Qualification</th>
+                </tr>
+                {% for t in teachers %}
+                <tr>
+                    <td>{{ t.person_id }}</td>
+                    <td>{{ t.name }}</td>
+                    <td>{{ t.subject }}</td>
+                    <td>{{ t.qualification }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center">No teacher records.</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning">Classrooms</div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Room Number</th>
+                    <th>Class Name</th>
+                    <th>Capacity</th>
+                </tr>
+                {% for c in classrooms %}
+                <tr>
+                    <td>{{ c.room_number }}</td>
+                    <td>{{ c.class_name }}</td>
+                    <td>{{ c.capacity }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3" class="text-center">No classroom records.</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info">Timetable</div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    <th>ID</th>
+                    <th>Day</th>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Time</th>
+                </tr>
+                {% for tt in timetable %}
+                <tr>
+                    <td>{{ tt.id }}</td>
+                    <td>{{ tt.day }}</td>
+                    <td>{{ tt.subject }}</td>
+                    <td>{{ tt.teacher_name }}</td>
+                    <td>{{ tt.time }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center">No timetable records.</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

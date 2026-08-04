@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="dashboard-header shadow-sm">
+        <h2>Welcome to School Management Dashboard</h2>
+        <p>Manage students, teachers, classrooms and timetable from one place.</p>
+    </div>
+
+    <div class="row mt-4">
+
+        <div class="col-md-3 mb-4">
+            <div class="stat-card blue">
+                <i class="bi bi-people-fill"></i>
+                <h3>{{ student_count }}</h3>
+                <p>Students</p>
+                <a href="/students">Manage</a>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="stat-card green">
+                <i class="bi bi-person-badge-fill"></i>
+                <h3>{{ teacher_count }}</h3>
+                <p>Teachers</p>
+                <a href="/teachers">Manage</a>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="stat-card orange">
+                <i class="bi bi-building-fill"></i>
+                <h3>{{ classroom_count }}</h3>
+                <p>Classrooms</p>
+                <a href="/classrooms">Manage</a>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-4">
+            <div class="stat-card purple">
+                <i class="bi bi-calendar-week-fill"></i>
+                <h3>{{ timetable_count }}</h3>
+                <p>Timetable</p>
+                <a href="/timetable">Manage</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

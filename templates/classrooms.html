@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+    <div class="page-heading">
+        <h2>Classroom Management</h2>
+        <p>Add, update, view and delete classroom records.</p>
+    </div>
+
+    <div class="card form-card shadow-sm mb-4">
+        <div class="card-header">
+            {% if edit_classroom %}Edit Classroom{% else %}Add New Classroom{% endif %}
+        </div>
+
+        <div class="card-body">
+            <form method="POST" action="{% if edit_classroom %}/classrooms/update/{{ edit_classroom.room_number }}{% else %}/classrooms/add{% endif %}">
+                <div class="row">
+
+                    <div class="col-md-4 mb-3">
+                        <label>Room Number</label>
+                        <input type="number" name="room_number" class="form-control"
+                               value="{{ edit_classroom.room_number if edit_classroom else '' }}"
+                               {% if edit_classroom %}readonly{% endif %}
+                               required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Class Name</label>
+                        <input type="text" name="class_name" class="form-control"
+                               value="{{ edit_classroom.class_name if edit_classroom else '' }}"
+                               required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label>Capacity</label>
+                        <input type="number" name="capacity" class="form-control"
+                               value="{{ edit_classroom.capacity if edit_classroom else '' }}"
+                               required>
+                    </div>
+
+                </div>
+
+                <button class="btn btn-warning">
+                    {% if edit_classroom %}Update Classroom{% else %}Add Classroom{% endif %}
+                </button>
+
+                {% if edit_classroom %}
+                    <a href="/classrooms" class="btn btn-secondary">Cancel</a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">Classroom Records</div>
+
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Room Number</th>
+                        <th>Class Name</th>
+                        <th>Capacity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for classroom in classrooms %}
+                    <tr>
+                        <td>{{ classroom.room_number }}</td>
+                        <td>{{ classroom.class_name }}</td>
+                        <td>{{ classroom.capacity }}</td>
+                        <td>
+                            <a href="/classrooms/edit/{{ classroom.room_number }}" class="btn btn-sm btn-warning">Edit</a>
+
+                            <form action="/classrooms/delete/{{ classroom.room_number }}" method="POST" class="d-inline"
+                                  onsubmit="return confirm('Delete this classroom?')">
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No classroom records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
