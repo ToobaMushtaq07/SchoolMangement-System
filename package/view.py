@@ -1,3 +1,8 @@
+from .student import Student
+from .teacher import Teacher
+from .classroom import Classroom
+from .timetable import Timetable
+
 class View:
     def view_all(self):
 

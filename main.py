@@ -1,3 +1,5 @@
+import os
+
 from package.student import Student
 from package.teacher import Teacher
 from package.classroom import Classroom
@@ -5,6 +7,89 @@ from package.timetable import Timetable
 from package.view import View
 
 
+# VALIDATION FUNCTIONS
+def get_unique_integer_id(file_name, id_label):
+    """
+    Gets a positive integer ID and checks whether it already
+    exists in the specified file.
+
+    IDs such as 1, 01 and 001 are considered the same.
+    """
+
+    while True:
+        entered_id = input(f"Enter {id_label}: ").strip()
+
+        # Check that the entered ID is an integer
+        try:
+            new_id = int(entered_id)
+        except ValueError:
+            print("Invalid input! Please enter an integer.")
+            continue
+
+        # Do not allow zero or negative IDs
+        if new_id <= 0:
+            print("Invalid input! ID must be greater than 0.")
+            continue
+
+        duplicate_found = False
+
+        # Check for a duplicate ID
+        if os.path.exists(file_name):
+
+            try:
+                with open(file_name, "r") as file:
+
+                    for line in file:
+
+                        if not line.strip():
+                            continue
+
+                        existing_id = line.strip().split(",", 1)[0]
+
+                        try:
+                            existing_id = int(existing_id)
+                        except ValueError:
+                            # Ignore old records containing invalid IDs
+                            continue
+
+                        if existing_id == new_id:
+                            duplicate_found = True
+                            break
+
+            except OSError as error:
+                print("Error while reading the file:", error)
+                continue
+
+        if duplicate_found:
+            print(
+                f"{id_label} {new_id} already exists! "
+                "Please enter another ID."
+            )
+            continue
+
+        # Convert it back to a string for writing to the text file
+        return str(new_id)
+
+
+def get_positive_integer(prompt, field_name):
+    """Gets a positive integer for age, capacity, etc."""
+
+    while True:
+        entered_value = input(prompt).strip()
+
+        try:
+            value = int(entered_value)
+        except ValueError:
+            print(f"Invalid input! Please enter an integer for {field_name}.")
+            continue
+
+        if value <= 0:
+            print(f"{field_name} must be greater than 0.")
+            continue
+
+        return str(value)
+
+# MAIN PROGRAM
 while True:
 
     print("\n========== SCHOOL MANAGEMENT SYSTEM ==========")
@@ -15,9 +100,9 @@ while True:
     print("5. View All Records")
     print("6. Exit")
 
-    choice = input("Enter your choice: ")
+    choice = input("Enter your choice: ").strip()
 
-    # ---------------- STUDENT MENU ---------------- #
+# STUDENT MENU 
 
     if choice == "1":
 
@@ -30,16 +115,31 @@ while True:
             print("4. Delete Student")
             print("5. Back")
 
-            student_choice = input("Enter your choice: ")
+            student_choice = input("Enter your choice: ").strip()
 
             if student_choice == "1":
 
-                person_id = input("Enter Student ID: ")
-                name = input("Enter Student Name: ")
-                age = input("Enter Age: ")
-                department = input("Enter Department: ")
+                person_id = get_unique_integer_id(
+                    Student.FILE_NAME,
+                    "Student ID"
+                )
 
-                student = Student(person_id, name, age, department)
+                name = input("Enter Student Name: ").strip()
+
+                age = get_positive_integer(
+                    "Enter Age: ",
+                    "Age"
+                )
+
+                department = input("Enter Department: ").strip()
+
+                student = Student(
+                    person_id,
+                    name,
+                    age,
+                    department
+                )
+
                 student.add_student()
 
             elif student_choice == "2":
@@ -61,10 +161,9 @@ while True:
                 break
 
             else:
-                print("Invalid Choice!")
+                print("Invalid choice! Please enter a number from 1 to 5.")
 
-# ---------------- TEACHER MENU ---------------- #
-
+# TEACHER MENU 
     elif choice == "2":
 
         while True:
@@ -76,16 +175,26 @@ while True:
             print("4. Delete Teacher")
             print("5. Back")
 
-            teacher_choice = input("Enter your choice: ")
+            teacher_choice = input("Enter your choice: ").strip()
 
             if teacher_choice == "1":
 
-                person_id = input("Enter Teacher ID: ")
-                name = input("Enter Teacher Name: ")
-                subject = input("Enter Subject: ")
-                qualification = input("Enter Qualification: ")
+                person_id = get_unique_integer_id(
+                    Teacher.FILE_NAME,
+                    "Teacher ID"
+                )
 
-                teacher = Teacher(person_id, name, subject, qualification)
+                name = input("Enter Teacher Name: ").strip()
+                subject = input("Enter Subject: ").strip()
+                qualification = input("Enter Qualification: ").strip()
+
+                teacher = Teacher(
+                    person_id,
+                    name,
+                    subject,
+                    qualification
+                )
+
                 teacher.add_teacher()
 
             elif teacher_choice == "2":
@@ -107,9 +216,9 @@ while True:
                 break
 
             else:
-                print("Invalid Choice!")
+                print("Invalid choice! Please enter a number from 1 to 5.")
 
-    # ---------------- CLASSROOM MENU ---------------- #
+# CLASSROOM MENU
 
     elif choice == "3":
 
@@ -122,15 +231,28 @@ while True:
             print("4. Delete Classroom")
             print("5. Back")
 
-            classroom_choice = input("Enter your choice: ")
+            classroom_choice = input("Enter your choice: ").strip()
 
             if classroom_choice == "1":
 
-                room_number = input("Enter Room Number: ")
-                class_name = input("Enter Class Name: ")
-                capacity = input("Enter Capacity: ")
+                room_number = get_unique_integer_id(
+                    Classroom.FILE_NAME,
+                    "Room Number"
+                )
 
-                classroom = Classroom(room_number, class_name, capacity)
+                class_name = input("Enter Class Name: ").strip()
+
+                capacity = get_positive_integer(
+                    "Enter Capacity: ",
+                    "Capacity"
+                )
+
+                classroom = Classroom(
+                    room_number,
+                    class_name,
+                    capacity
+                )
+
                 classroom.add_classroom()
 
             elif classroom_choice == "2":
@@ -152,9 +274,9 @@ while True:
                 break
 
             else:
-                print("Invalid Choice!")   
+                print("Invalid choice! Please enter a number from 1 to 5.")
 
-# ---------------- TIMETABLE MENU ---------------- #
+# TIMETABLE MENU 
 
     elif choice == "4":
 
@@ -167,16 +289,22 @@ while True:
             print("4. Delete Timetable")
             print("5. Back")
 
-            timetable_choice = input("Enter your choice: ")
+            timetable_choice = input("Enter your choice: ").strip()
 
             if timetable_choice == "1":
 
-                day = input("Enter Day: ")
-                subject = input("Enter Subject: ")
-                teacher_name = input("Enter Teacher Name: ")
-                time = input("Enter Time: ")
+                day = input("Enter Day: ").strip()
+                subject = input("Enter Subject: ").strip()
+                teacher_name = input("Enter Teacher Name: ").strip()
+                time = input("Enter Time: ").strip()
 
-                timetable = Timetable(day, subject, teacher_name, time)
+                timetable = Timetable(
+                    day,
+                    subject,
+                    teacher_name,
+                    time
+                )
+
                 timetable.add_timetable()
 
             elif timetable_choice == "2":
@@ -198,15 +326,15 @@ while True:
                 break
 
             else:
-                print("Invalid Choice!")
+                print("Invalid choice! Please enter a number from 1 to 5.")
 
-    # ---------------- VIEW ALL ---------------- #
+# VIEW ALL
 
     elif choice == "5":
 
-        View.view_all()
+        View().view_all()
 
-    # ---------------- EXIT ---------------- #
+# EXIT 
 
     elif choice == "6":
 
@@ -214,6 +342,4 @@ while True:
         break
 
     else:
-        print("Invalid Choice! Please try again.")                 
-
-                            
+        print("Invalid choice! Please enter a number from 1 to 6.")

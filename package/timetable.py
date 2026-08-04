@@ -1,4 +1,6 @@
 import os
+
+
 class Timetable:
 
     FILE_NAME = "data/timetable.txt"
@@ -21,7 +23,7 @@ class Timetable:
             print("Error:", e)
 
     # View Timetable
-    def view_timetable():
+    def view_timetable(self):
 
         try:
 
@@ -32,16 +34,23 @@ class Timetable:
             with open(Timetable.FILE_NAME, "r") as file:
                 records = file.readlines()
 
-            if len(records) == 0:
+            valid_records = []
+
+            for line in records:
+                stripped = line.strip()
+                if not stripped:
+                    continue  # Skip empty lines
+                parts = stripped.split(",")
+                if len(parts) == 4:
+                    valid_records.append(parts)
+
+            if len(valid_records) == 0:
                 print("No timetable record found.")
                 return
 
             print("\n========== Timetable Records ==========")
 
-            for line in records:
-
-                day, subject, teacher_name, time = line.strip().split(",")
-
+            for day, subject, teacher_name, time in valid_records:
                 print(f"Day     : {day}")
                 print(f"Subject : {subject}")
                 print(f"Teacher : {teacher_name}")
@@ -55,11 +64,11 @@ class Timetable:
             print("Error:", e)
 
     # Search Timetable
-    def search_timetable():
+    def search_timetable(self):
 
         try:
 
-            search_day = input("Enter Day: ")
+            search_day = input("Enter Day: ").strip()
 
             if not os.path.exists(Timetable.FILE_NAME):
                 print("Timetable file not found.")
@@ -70,8 +79,13 @@ class Timetable:
             with open(Timetable.FILE_NAME, "r") as file:
 
                 for line in file:
-
-                    day, subject, teacher_name, time = line.strip().split(",")
+                    stripped = line.strip()
+                    if not stripped:
+                        continue  # Skip empty lines
+                    parts = stripped.split(",")
+                    if len(parts) != 4:
+                        continue  # Skip corrupted lines
+                    day, subject, teacher_name, time = parts
 
                     if day.lower() == search_day.lower():
 
@@ -92,11 +106,11 @@ class Timetable:
             print("Error:", e)
 
     # Delete Timetable
-    def delete_timetable():
+    def delete_timetable(self):
 
         try:
 
-            delete_day = input("Enter Day to delete: ")
+            delete_day = input("Enter Day to delete: ").strip()
 
             if not os.path.exists(Timetable.FILE_NAME):
                 print("Timetable file not found.")
@@ -110,8 +124,13 @@ class Timetable:
             with open(Timetable.FILE_NAME, "w") as file:
 
                 for line in records:
-
-                    day = line.strip().split(",")[0]
+                    stripped = line.strip()
+                    if not stripped:
+                        continue  # Skip empty lines instead of writing them back
+                    parts = stripped.split(",")
+                    if len(parts) < 1:
+                        continue
+                    day = parts[0]
 
                     if day.lower() != delete_day.lower():
                         file.write(line)

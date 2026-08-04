@@ -22,7 +22,7 @@ class Teacher(Person):
             print("Error:", e)
 
     # View Teachers
-    def view_teachers():
+    def view_teachers(self):
         try:
             if not os.path.exists(Teacher.FILE_NAME):
                 print("No teacher record found.")
@@ -53,7 +53,7 @@ class Teacher(Person):
             print("Error:", e)
 
     # Search Teacher
-    def search_teacher():
+    def search_teacher(self):
 
         try:
             search_id = input("Enter Teacher ID: ")
@@ -89,7 +89,7 @@ class Teacher(Person):
             print("Error:", e)
 
     # Delete Teacher
-    def delete_teacher():
+    def delete_teacher(self):
 
         try:
             delete_id = input("Enter Teacher ID to delete: ")

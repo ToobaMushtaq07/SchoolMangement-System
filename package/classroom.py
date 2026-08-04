@@ -20,7 +20,7 @@ class Classroom:
             print("Error:", e)
 
     # View Classrooms
-    def view_classrooms():
+    def view_classrooms(self):
 
         try:
 
@@ -54,7 +54,7 @@ class Classroom:
 
     # Search Classroom
 
-    def search_classroom():
+    def search_classroom(self):
 
         try:
 
@@ -90,7 +90,7 @@ class Classroom:
             print("Error:", e)
 
     # Delete Classroom
-    def delete_classroom():
+    def delete_classroom(self):
 
         try:
 
